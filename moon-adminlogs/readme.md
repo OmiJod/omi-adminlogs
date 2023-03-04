@@ -116,6 +116,7 @@ qb-adminmenu/client/events.lua Line 64
 Replace This Event
 ```lua
 RegisterNetEvent('qb-admin:client:SaveCar', function()
+    local player = QBCore.Functions.GetPlayerData()
     local ped = PlayerPedId()
     local veh = GetVehiclePedIsIn(ped)
 
@@ -203,27 +204,28 @@ end)
 With 
 ```lua
 RegisterNetEvent('hospital:client:Revive', function()
-    local player = PlayerPedId()
+    local player = QBCore.Functions.GetPlayerData()
+    local ped = PlayerPedId()
 
     if isDead or InLaststand then
-        local pos = GetEntityCoords(player, true)
-        NetworkResurrectLocalPlayer(pos.x, pos.y, pos.z, GetEntityHeading(player), true, false)
+        local pos = GetEntityCoords(ped, true)
+        NetworkResurrectLocalPlayer(pos.x, pos.y, pos.z, GetEntityHeading(ped), true, false)
         isDead = false
-        SetEntityInvincible(player, false)
+        SetEntityInvincible(ped, false)
         SetLaststand(false)
     end
 
     if isInHospitalBed then
         loadAnimDict(inBedDict)
-        TaskPlayAnim(player, inBedDict , inBedAnim, 8.0, 1.0, -1, 1, 0, 0, 0, 0 )
-        SetEntityInvincible(player, true)
+        TaskPlayAnim(ped, inBedDict , inBedAnim, 8.0, 1.0, -1, 1, 0, 0, 0, 0 )
+        SetEntityInvincible(ped, true)
         canLeaveBed = true
     end
 
     TriggerServerEvent("hospital:server:RestoreWeaponDamage")
-    SetEntityMaxHealth(player, 200)
-    SetEntityHealth(player, 200)
-    ClearPedBloodDamage(player)
+    SetEntityMaxHealth(ped, 200)
+    SetEntityHealth(ped, 200)
+    ClearPedBloodDamage(ped)
     SetPlayerSprint(PlayerId(), true)
     ResetAll()
     ResetPedMovementClipset(player, 0.0)
@@ -276,6 +278,7 @@ end)
 with
 ```lua
 RegisterNetEvent('hospital:client:SetPain', function()
+    local player = QBCore.Functions.GetPlayerData()
     ApplyBleed(math.random(1,4))
     if not BodyParts[Config.Bones[24816]].isDamaged then
         BodyParts[Config.Bones[24816]].isDamaged = true
@@ -333,6 +336,7 @@ with
 ```lua
 RegisterNetEvent('vehiclemod:client:fixEverything', function()
     if (IsPedInAnyVehicle(PlayerPedId(), false)) then
+        local player = QBCore.Functions.GetPlayerData()
         local veh = GetVehiclePedIsIn(PlayerPedId(),false)
         local vehicleName = GetDisplayNameFromVehicleModel(GetEntityModel(veh))    
         if not IsThisModelABicycle(GetEntityModel(veh)) and GetPedInVehicleSeat(veh, -1) == PlayerPedId() then
